@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nijigen.server.mapper.LeaveEmployeeFormVOMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.nijigen.server.pojo.VO.LeaveEmployeeFormVO">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="gender" property="gender" />
+        <result column="leave_date" property="leaveDate" />
+        <result column="remark" property="remark" />
+        <result column="d_name" property="deptName" />
+        <result column="p_name" property="positionName" />
+    </resultMap>
+
+    <select id="selectLeaveEmployeeReportForm" resultMap="BaseResultMap">
+        SELECT
+            e.`name`,
+            e.`gender`,
+            e.`leave_date`,
+            el.`remark`,
+            d.`name` AS `d_name`,
+            p.`name` AS `p_name`
+        FROM
+            `employee` e,
+            `department` d,
+            `position` p,
+            `employee_leave` el
+        WHERE
+            el.`employee_id` = e.id
+            AND e.position_id = p.id
+            AND e.`leave_date` BETWEEN #{leaveDateScope[0]} AND #{leaveDateScope[1]}
+            AND e.`department_id` = d.`id`
+            <if test="deptName!=null">
+                AND d.`name` = #{deptName}
+            </if>
+        ORDER BY
+            e.id
+    </select>
+
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nijigen.server.mapper.EntryEmployeeFormVOMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.nijigen.server.pojo.VO.EntryEmployeeFormVO">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="gender" property="gender" />
+        <result column="begin_date" property="beginDate" />
+        <result column="tiptop_degree" property="tiptopDegree" />
+        <result column="d_name" property="deptName" />
+        <result column="p_name" property="positionName" />
+    </resultMap>
+
+    <select id="selectNewEmployeeReportForm" resultMap="BaseResultMap">
+        SELECT
+            e.`id`,
+            e.`name`,
+            e.`gender`,
+            e.`begin_date`,
+            e.`tiptop_degree`,
+            d.`name` AS `d_name`,
+            p.`name` AS `p_name`
+        FROM
+            `employee` e,
+            `department` d,
+            `position` p
+        WHERE
+            e.`begin_date` BETWEEN #{beginDateScope[0]} AND #{beginDateScope[1]}
+            AND e.position_id = p.id
+            AND e.`department_id` = d.`id`
+            <if test="deptName!=null">
+                AND d.`name` = #{deptName}
+            </if>
+        ORDER BY
+            e.id
+    </select>
+
+
+</mapper>

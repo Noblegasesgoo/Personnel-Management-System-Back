@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nijigen.server.mapper.EmployeeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.nijigen.server.pojo.Employee">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="gender" property="gender" />
+        <result column="birthday" property="birthday" />
+        <result column="id_card" property="idCard" />
+        <result column="wedlock" property="wedlock" />
+        <result column="nation_id" property="nationId" />
+        <result column="native_place" property="nativePlace" />
+        <result column="politic_id" property="politicId" />
+        <result column="email" property="email" />
+        <result column="phone" property="phone" />
+        <result column="address" property="address" />
+        <result column="department_id" property="departmentId" />
+        <result column="job_level_id" property="jobLevelId" />
+        <result column="position_id" property="positionId" />
+        <result column="engage_form" property="engageForm" />
+        <result column="tiptop_degree" property="tiptopDegree" />
+        <result column="specialty" property="specialty" />
+        <result column="university" property="university" />
+        <result column="begin_date" property="beginDate" />
+        <result column="work_state" property="workState" />
+        <result column="conversion_date" property="conversionDate" />
+        <result column="leave_date" property="leaveDate" />
+    </resultMap>
+
+    <resultMap id="getAllEmpInfoResultMap" type="com.nijigen.server.pojo.Employee" extends="BaseResultMap">
+        <association property="nation" javaType="com.nijigen.server.pojo.Nation">
+            <id column="n_id" property="id"/>
+            <result column="n_name" property="name"/>
+        </association>
+
+        <association property="politicsStatus" javaType="com.nijigen.server.pojo.PoliticsStatus">
+            <id column="ps_id" property="id"/>
+            <result column="ps_name" property="name"/>
+        </association>
+
+        <association property="department" javaType="com.nijigen.server.pojo.Department">
+            <id column="d_id" property="id"/>
+            <result column="d_name" property="name"/>
+        </association>
+
+        <association property="position" javaType="com.nijigen.server.pojo.Position">
+            <id column="p_id" property="id"/>
+            <result column="p_name" property="name"/>
+        </association>
+
+        <association property="jobLevel" javaType="com.nijigen.server.pojo.JobLevel">
+            <id column="jl_id" property="id"/>
+            <result column="jl_name" property="name"/>
+        </association>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, gender, birthday, id_card, wedlock, nation_id, native_place, politic_id, email, phone, address, department_id, job_level_id, position_id, engage_form, tiptop_degree, specialty, university, begin_date, work_state, conversion_date, leave_date
+    </sql>
+
+    <select id="getAllEmpInfo" resultMap="getAllEmpInfoResultMap">
+        SELECT
+            e.`id`,
+            e.`name`,
+            e.`gender`,
+            e.`birthday`,
+            e.`id_card`,
+            e.`wedlock`,
+            e.`nation_id`,
+            e.`native_place`,
+            e.`politic_id`,
+            e.`email`,
+            e.`phone`,
+            e.`address`,
+            e.`department_id`,
+            e.`job_level_id`,
+            e.`position_id`,
+            e.`engage_form`,
+            e.`tiptop_degree`,
+            e.`specialty`,
+            e.`university`,
+            e.`begin_date`,
+            e.`work_state`,
+            e.`conversion_date`,
+            e.`leave_date`,
+            n.`id` AS `n_id`,
+            n.`name` AS `n_name`,
+            ps.`id` AS `ps_id`,
+            ps.`name` AS `ps_name`,
+            jl.`id` AS `jl_id`,
+            jl.`name` AS `jl_name`,
+            d.`id` AS `d_id`,
+            d.`name` AS `d_name`,
+            p.`id` AS `p_id`,
+            p.`name` AS `p_name`
+        FROM
+            `employee` e,
+            `nation` n,
+            `politics_status` ps,
+            `job_level` jl,
+            `department` d,
+            `position` p
+        WHERE
+            e.`nation_id` = n.`id`
+            AND e.`politic_id` = ps.`id`
+            AND e.`job_level_id` = jl.`id`
+            AND e.`department_id` = d.`id`
+            AND e.`position_id` = p.`id`
+            <if test="employee.id!=null">
+                AND e.`id` = #{employee.id}
+            </if>
+            <if test="employee.name!=null">
+                AND e.`name` LIKE CONCAT('%',#{employee.name},'%')
+            </if>
+            <if test="employee.workState!=null">
+                AND e.`work_state` = #{employee.workState}
+            </if>
+            <if test="employee.nationId!=null">
+                AND e.`nation_id` = #{employee.nationId}
+            </if>
+            <if test="employee.politicId!=null">
+                AND e.`politic_id` = #{employee.politicId}
+            </if>
+            <if test="employee.jobLevelId!=null">
+                AND e.`job_level_id` = #{employee.jobLevelId}
+            </if>
+            <if test="employee.departmentId!=null">
+                AND e.`department_id` = #{employee.departmentId}
+            </if>
+            <if test="employee.positionId!=null">
+                AND e.`position_id` = #{employee.positionId}
+            </if>
+            <if test="beginDateScope!=null and beginDateScope!='' and beginDateScope.length==2">
+                AND e.`begin_date` BETWEEN #{beginDateScope[0]} AND #{beginDateScope[1]}
+            </if>
+        ORDER BY
+            e.`id`
+    </select>
+
+    <!-- 查询员工信息（导出用），可以传入员工id实现单条查询 -->
+    <select id="selectEmployee" resultMap="getAllEmpInfoResultMap">
+        SELECT
+            e.`id`,
+            e.`name`,
+            e.`gender`,
+            e.`birthday`,
+            e.`id_card`,
+            e.`wedlock`,
+            e.`nation_id`,
+            e.`native_place`,
+            e.`politic_id`,
+            e.`email`,
+            e.`phone`,
+            e.`address`,
+            e.`department_id`,
+            e.`job_level_id`,
+            e.`position_id`,
+            e.`engage_form`,
+            e.`tiptop_degree`,
+            e.`specialty`,
+            e.`university`,
+            e.`begin_date`,
+            e.`work_state`,
+            e.`conversion_date`,
+            e.`leave_date`,
+            n.`id` AS `n_id`,
+            n.`name` AS `n_name`,
+            ps.`id` AS `ps_id`,
+            ps.`name` AS `ps_name`,
+            jl.`id` AS `jl_id`,
+            jl.`name` AS `jl_name`,
+            d.`id` AS `d_id`,
+            d.`name` AS `d_name`,
+            p.`id` AS `p_id`,
+            p.`name` AS `p_name`
+        FROM
+            `employee` e,
+            `nation` n,
+            `politics_status` ps,
+            `job_level` jl,
+            `department` d,
+            `position` p
+        WHERE
+            e.`nation_id` = n.`id`
+            AND e.`politic_id` = ps.`id`
+            AND e.`job_level_id` = jl.`id`
+            AND e.`department_id` = d.`id`
+            AND e.`position_id` = p.`id`
+            <if test="emp_id!=null">
+                AND e.`id` = #{emp_id}
+            </if>
+        ORDER BY
+            e.`id`
+    </select>
+
+</mapper>

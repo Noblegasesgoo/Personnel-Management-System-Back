@@ -1,0 +1,144 @@
+spring:
+  profiles:
+    #    active: pro
+    active: dev
+
+# Mybatis-plus配置
+mybatis-plus:
+  #配置Mapper映射文件
+  mapper-locations: classpath*:/mapper/*Mapper.xml
+  # 配置MyBatis数据返回类型别名（默认别名是类名）
+  type-aliases-package: com.zhao.server.pojo
+  configuration:
+    # 自动驼峰命名
+    map-underscore-to-camel-case: true
+
+
+## Mybatis SQL 打印(方法接口所在的包，不是Mapper.xml所在的包)
+logging:
+  level:
+    com.nijigen.server.mapper: debug
+  config: classpath:log/logback-spring.xml
+  file:
+    path: log/pmslog
+
+jwt:
+  # JWT存储的请求头
+  tokenHeader:
+  # JWT 加解密使用的密钥
+  secret:
+  # JWT的超期限时间（60*60*24）
+  expiration:
+  # JWT 负载中拿到开头
+  tokenHead:
+
+---
+# 数据源配置
+spring:
+
+  # 数据源配置
+  datasource:
+    name: druidDataSource
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driver-class-name:
+      url:
+      username:
+      password:
+      filters: stat,wall,log4j,config
+      max-active: 100
+      initial-size: 1
+      max-wait: 60000
+      min-idle: 1
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: select 'x'
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-open-prepared-statements: 50
+      max-pool-prepared-statement-per-connection-size: 20
+
+  redis:
+    # 超时时间
+    timeout:
+    # 服务器地址
+    host:
+    # 服务器端口
+    port:
+    # 数据库
+    database:
+    # 密码
+    password:
+    lettuce:
+      pool:
+        # 最大连接数
+        max-active:
+        # 最大连接阻塞等待时间
+        max-wait:
+        # 最大空闲连接
+        max-idle:
+        # 最小空闲连接
+        min-idle:
+
+  profiles: dev
+
+
+server:
+  # 端口
+  port:
+
+---
+# 数据源配置
+spring:
+  datasource:
+    name: druidDataSource
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driver-class-name:
+      url:
+      username:
+      password:
+      filters: stat,wall,log4j,config
+      max-active: 100
+      initial-size: 1
+      max-wait: 60000
+      min-idle: 1
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: select 'x'
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-open-prepared-statements: 50
+      max-pool-prepared-statement-per-connection-size: 20
+
+  redis:
+    # 超时时间
+    timeout:
+    # 服务器地址
+    host:
+    # 服务器端口
+    port:
+    # 数据库
+    database: 0
+    # 密码
+    password:
+    lettuce:
+      pool:
+        # 最大连接数
+        max-active:
+        # 最大连接阻塞等待时间
+        max-wait:
+        # 最大空闲连接
+        max-idle:
+        # 最小空闲连接
+        min-idle:
+
+  profiles: pro
+
+server:
+  # 端口
+  port:

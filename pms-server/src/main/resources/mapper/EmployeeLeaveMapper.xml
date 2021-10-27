@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nijigen.server.mapper.EmployeeLeaveMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.nijigen.server.pojo.EmployeeLeave">
+        <id column="id" property="id" />
+        <result column="employee_id" property="employeeId" />
+        <result column="application_date" property="applicationDate" />
+        <result column="enabled" property="enabled" />
+        <result column="leave_date" property="leaveDate" />
+        <result column="remark" property="remark" />
+    </resultMap>
+
+    <resultMap id="selectAllEmployeeLeaveInfoResultMap" type="com.nijigen.server.pojo.EmployeeLeave" extends="BaseResultMap">
+        <association property="employee" javaType="com.nijigen.server.pojo.Employee">
+            <id column="emp_id" property="id"/>
+            <result column="emp_name" property="name"/>
+        </association>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, employee_id, leave_date, remark
+    </sql>
+
+    <select id="selectAllEmployeeLeaveInfo" resultMap="selectAllEmployeeLeaveInfoResultMap">
+        SELECT
+            el.`id`,
+            el.`employee_id`,
+            el.`application_date`,
+            el.`remark`,
+            e.`id` AS `emp_id`,
+            e.`name` AS `emp_name`
+        FROM
+            `employee_leave` el,
+            `employee` e
+        WHERE
+            el.`employee_id` = e.`id`
+            AND el.`enabled` = true;
+    </select>
+
+</mapper>

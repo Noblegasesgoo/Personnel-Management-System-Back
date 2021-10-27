@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nijigen.server.mapper.MenuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.nijigen.server.pojo.Menu">
+        <id column="id" property="id" />
+        <result column="url" property="url" />
+        <result column="path" property="path" />
+        <result column="component" property="component" />
+        <result column="name" property="name" />
+        <result column="icon_cls" property="iconCls" />
+        <result column="keep_alive" property="keepAlive" />
+        <result column="require_auth" property="requireAuth" />
+        <result column="parent_id" property="parentId" />
+        <result column="enabled" property="enabled" />
+    </resultMap>
+
+    <resultMap id="selectMenusByUserIdResultMap" type="com.nijigen.server.pojo.Menu" extends="BaseResultMap">
+        <collection property="subMenu" ofType="com.nijigen.server.pojo.Menu">
+            <id column="id2" property="id" />
+            <result column="url2" property="url" />
+            <result column="path2" property="path" />
+            <result column="component2" property="component" />
+            <result column="name2" property="name" />
+            <result column="icon_cls2" property="iconCls" />
+            <result column="keep_alive2" property="keepAlive" />
+            <result column="require_auth2" property="requireAuth" />
+            <result column="parent_Id2" property="parentId" />
+            <result column="enabled2" property="enabled" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="selectMenusWithRoleResultMap" type="com.nijigen.server.pojo.Menu" extends="BaseResultMap">
+        <collection property="roles" ofType="com.nijigen.server.pojo.Role">
+            <id column="role_id" property="id" />
+            <result column="role_name" property="name" />
+            <result column="role_name_zh" property="nameZh" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="selectAllMenusResultMap" type="com.nijigen.server.pojo.Menu" extends="BaseResultMap">
+        <id column="id1" property="id"/>
+        <result column="name1" property="name"/>
+        <collection property="subMenu" ofType="com.nijigen.server.pojo.Menu">
+            <id column="id2" property="id"/>
+            <result column="name2" property="name"/>
+            <collection property="subMenu" ofType="com.nijigen.server.pojo.Menu">
+                <id column="id3" property="id"/>
+                <result column="name3" property="name"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, url, path, component, name, icon_cls, keep_alive, require_auth, parent_id, enabled
+    </sql>
+
+    <select id="selectMenusByUserId" resultMap="selectMenusByUserIdResultMap">
+        SELECT DISTINCT
+            m1.`id`,
+            m1.`url`,
+            m1.`path`,
+            m1.`component`,
+            m1.`name`,
+            m1.`icon_cls`,
+            m1.`keep_alive`,
+            m1.`require_auth`,
+            m1.`parent_id`,
+            m1.`enabled`,
+            m2.`id` AS `id2`,
+            m2.`url` AS `url2`,
+            m2.`path` AS `path2`,
+            m2.`component` AS `component2`,
+            m2.`name` AS `name2`,
+            m2.`icon_cls` AS `icon_cls2`,
+            m2.`keep_alive` AS `keep_alive2`,
+            m2.`require_auth` AS `require_auth2`,
+            m2.`parent_id` AS `parent_id2`,
+            m2.`enabled` AS `enabled2`
+        FROM
+            `menu` m1,
+            `menu` m2,
+            `user_role` ur,
+            `menu_role` mr
+        WHERE
+            m1.`id` = m2.`parent_id`
+            AND m2.`id` = mr.`menu_id`
+            AND mr.`role_id` = ur.`role_id`
+            AND ur.`user_id` = #{userId}
+            AND m2.enabled = TRUE
+        ORDER BY
+	        m2.`id`
+    </select>
+
+    <select id="selectMenusWithRole" resultMap="selectMenusWithRoleResultMap">
+        SELECT
+            m.`id`,
+            m.`url`,
+            m.`path`,
+            m.`component`,
+            m.`name`,
+            m.`icon_cls`,
+            m.`keep_alive`,
+            m.`require_auth`,
+            m.`parent_id`,
+            m.`enabled`,
+            r.`id` AS `role_id`,
+            r.`name` AS `role_name`,
+            r.`name_zh` AS `role_name_zh`
+        FROM
+            menu m,
+            menu_role mr,
+            role r
+        WHERE
+            m.`id` = mr.`menu_id`
+            AND mr.`role_id` = r.`id`
+        ORDER BY
+            m.`id`
+    </select>
+
+
+    <select id="selectAllMenus" resultMap="selectAllMenusResultMap">
+        SELECT
+            m1.`id` AS `id1`,
+            m1.`name` AS `name1`,
+            m2.`id` AS `id2`,
+            m2.`name` AS `name2`,
+            m3.`id` AS `id3`,
+            m3.`name` AS `name3`
+        FROM
+            menu m1,
+            menu m2,
+            menu m3
+        WHERE
+            m1.id = m2.parent_id
+            AND m2.id = m3.parent_id
+            AND m3.enabled = TRUE
+    </select>
+
+</mapper>
